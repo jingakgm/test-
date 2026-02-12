@@ -1,0 +1,459 @@
+/* 기본 레이아웃 */
+body { margin: 0; padding: 0; background: #1a1a1b; overflow: hidden; font-family: 'Noto Sans KR', sans-serif; user-select: none; color: #e2e2e2; }
+#main-container { display: flex;
+    flex-direction: column; /* 세로 배열: 뷰포트가 위, 푸터가 아래 */
+    width: 100vw;
+    height: 100vh; }
+#book-viewport { 
+  flex: 1; /* 남은 공간을 모두 차지 */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #121213;
+    overflow: hidden;
+}
+/* 2. Turn.js 내부 컨테이너 가시성 확보 */
+#book {
+    margin: 0 auto !important; 
+    display: block !important; /* 가끔 display:none으로 남는 경우 방지 */
+    visibility: visible !important;
+touch-action: none; /* 브라우저 기본 스크롤 차단 (Turn.js 드래그 집중) */
+    -webkit-user-drag: none;
+    user-select: none;
+will-change: transform; /* 브라우저에 최적화 신호 전달 */
+    image-rendering: -webkit-optimize-contrast; /* 이미지 선명도 향상 */
+    transform-origin: center center; /* 중앙 기준 확대 */
+}
+
+/* 확대 중이 아닐 때만 마우스 커서를 '손바닥' 모양으로 바꿔 드래그 가능함을 암시 */
+#book:not(.zoomed) {
+    cursor: grab;
+}
+#book:active {
+    cursor: grabbing;
+}
+
+#book img {
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+#book .page {
+    touch-action: none; /* Turn.js가 터치를 온전히 제어하게 함 */
+}
+
+/* 페이지 입력창 슬림화 (보라색 원 부분 수정) */
+.page-jump-box {
+    display: flex;
+    align-items: center;
+    background: #2c2c2e;
+    border: 1px solid #3a3a3c;
+    border-radius: 6px;
+    padding: 0 8px; /* 패딩 축소 */
+    height: 32px;
+}
+/* 2. 페이지 입력창 슬림화 (40px) */
+#page-input {
+    width: 35px !important; /* 너비를 35px로 고정하여 공간 절약 */
+    background: transparent;
+    border: none;
+    color: #fff;
+    text-align: center;
+    font-size: 13px;
+    outline: none;
+}
+#page-input::-webkit-inner-spin-button, 
+#page-input::-webkit-outer-spin-button { 
+    -webkit-appearance: none;  margin: 0; 
+}
+
+/* UI 레이아웃 정돈 */
+#page-label-spread {
+    font-size: 13px;
+    min-width: 70px;
+    text-align: center;
+    color: #888;
+}
+
+/* 페이지 왜곡 방지 */
+.page {
+    background-color: #fff;
+    width: 100%;
+    height: 100%;
+}
+.page img { pointer-events: none; /* 이미지 클릭 방해 금지 */}
+
+/* 하단 UI 바 */
+#ui-footer { 
+    height: calc(65px + env(safe-area-inset-bottom)); 
+    background: #1c1c1e; display: flex; justify-content: space-between; align-items: center; 
+    padding: 0 20px env(safe-area-inset-bottom) 20px; border-top: 1px solid #333; z-index: 2000;
+}
+.ui-group { display: flex; align-items: center; gap: 8px; }
+
+/* 세련된 버튼 */
+button { -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+    line-height: 1; /* 높이 계산을 명확하게 하기 위해 1로 고정 */
+    
+    /* 폰트 깨짐 및 흐림 방지 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 500;
+    min-width: fit-content; /* 내용물에 맞춰 너비 보장 */
+    /* 높이 고정 및 중앙 정렬 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px; /* 모든 버튼 높이를 36px로 통일 */
+    padding: 0 14px; 
+    box-sizing: border-box; /* 패딩이 높이에 영향을 주지 않도록 설정 */
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid #3a3a3c;
+    background: #2c2c2e;
+letter-spacing: -0.01em;
+    color: #fff;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+    /* 하드웨어 가속으로 렌더링 선명도 향상 */
+    transform: translateZ(0); }
+button:hover { background: #00bcd4; border-color: #00bcd4; color: #000; }
+/* 유틸리티 버튼 (아이콘) 크기 고정 */
+.util-btn {
+    width: 36px;
+    min-width: 36px;
+    padding: 0;
+}
+/* 커스텀 슬라이더 디자인 (날것 느낌 제거) */
+.slider-container { position: relative; width:50%; margin: 0 15px;}
+#page-slider { width: 100%; -webkit-appearance: none; background: transparent; height: 20px; outline: none; }
+#page-slider::-webkit-slider-runnable-track { width: 100%; height: 2px; background: #444; border-radius: 1px; }
+#page-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: #00bcd4; margin-top: -6px; border: 2px solid #1c1c1e; box-shadow: 0 0 5px rgba(0,188,212,0.5); }
+
+/* 슬라이더 툴팁 */
+#slider-tooltip {
+    position: absolute;
+    top: -40px; /* 위치 소폭 조정 */
+    transform: translateX(-50%);
+    background: #3b82f6; /* 툴팁 배경색 */
+    color: #000; /* 가독성을 위해 검정색 글자 */
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    display: block; /* 항상 블록 상태로 두되 opacity로 제어 */
+    opacity: 0; /* 평소에는 숨김 */
+    transition: opacity 0.3s ease, left 0.1s ease-out; /* 부드러운 이동 */
+    pointer-events: none;
+    z-index: 3000;
+}
+/* 활성화되었을 때만 표시 */
+#slider-tooltip.show {
+    opacity: 1;
+}
+/* 화살표 모양 추가 */
+#slider-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #3b82f6; /* 배경색과 동일하게 수정 */
+}
+.slider-container:hover #slider-tooltip, #page-slider:active + #slider-tooltip { display: block; }
+
+
+/* 목차 패널 */
+#thumb-panel {
+    position: fixed;
+    bottom: -280px;
+    left: 0;
+    width: 100%;
+    height: 130px;
+    background: rgba(15, 15, 17, 0.95);
+    backdrop-filter: blur(15px);
+    transition: bottom 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+}
+
+#thumb-panel.open { 
+    bottom: calc(65px + env(safe-area-inset-bottom)) !important; 
+}
+
+#thumb-track { 
+    flex: 1;
+    display: flex;
+    flex-wrap: nowrap; /* 아이템이 아래로 떨어지지 않게 고정 */
+    align-items: center;
+    padding: 20px 40px; 
+    gap: 15px;
+    overflow-x: auto; /* 터치 스크롤 허용 */
+    scrollbar-width: none; /* 파이어폭스 휠 바 숨김 */
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x; /* 세로 스크롤 방해 금지 */
+}
+
+#thumb-track::-webkit-scrollbar { display: none; }
+
+/* 목차 전용 커스텀 슬라이드바 (하단 바 형태) */
+#thumb-scroll-container {
+    position: absolute;
+    bottom: 10px;
+    left: 40px;
+    right: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+/* flipbook.skin.css 수정 */
+#thumb-scrollbar {
+    position: absolute;
+    top: -3px;
+    width: 50px;
+    height: 10px;
+    background: #00bcd4;
+    border-radius: 5px;
+    transition: left 0.1s ease-out; /* transform 애니메이션은 드래그 방해되므로 제거 */
+    cursor: grab;
+    user-select: none;
+    touch-action: none; /* 브라우저 기본 터치 방지 */    z-index: 10000; /* 목차 패널 내에서 최상단으로 올림 */
+    pointer-events: auto !important; /* 클릭 및 드래그 허용 */
+    display: block;
+}
+
+/* 드래그 중일 때 가시성 확보 */
+#thumb-scrollbar.dragging {
+    cursor: grabbing !important;
+    background: #fff !important;
+}
+
+#thumb-scrollbar:active, #thumb-scrollbar.dragging {
+    cursor: grabbing;
+    transform: scaleY(1.5); /* 드래그 시 두꺼워짐 */
+    background: #fff; /* 드래그 시 색상 변경 */
+}
+
+.thumb-item {
+    flex: 0 0 calc(10% - 15px); /* 화면에 약 10개가 보이도록 설정 */
+    min-width: 50px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.thumb-img-container {
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid #333;
+    transition: 0.2s;
+    height: 80px; /* 높이를 이미지의 절반 정도로 고정 */
+}
+
+/* 이미지 위 페이지 번호 오버레이 (사용자 제공 이미지 스타일) */
+.thumb-overlay {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
+    pointer-events: none;
+}
+
+.thumb-item.active .thumb-img-container {
+    border-color: #00bcd4;
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.5);
+}
+
+.thumb-item.active .thumb-overlay { color: #00bcd4; font-size: 18px; }
+
+.thumb-item img { 
+    width: 100%;
+    height: 160px; /* 원본 이미지의 높이 비율 유지 (height: 200% 효과) */
+    display: block; 
+    filter: brightness(0.8);
+    object-fit: cover;
+    object-position: top; /* 이미지의 상단부만 보이도록 고정 */
+}
+.thumb-item.active img {
+    border: none; /* 이미지가 아닌 컨테이너에 보더 적용 */
+    box-shadow: none;
+}
+.thumb-item:hover img, .thumb-item.active img { border-color: #00bcd4; opacity: 1; transform: translateY(-2px); }
+.thumb-label { font-size: 11px;
+    color: #00bcd4; /* 강조 색상 */
+    font-weight: 500;
+    margin-top: 8px; }
+
+/* [공통] 도움말 모달 및 퀵 메뉴 스타일 (95행 부근 삽입) */
+.modal-overlay {
+    display: none; /* 초기 상태 숨김 */
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85); z-index: 9000;
+    justify-content: center; align-items: center;
+}
+.modal-overlay.open { display: flex; }
+
+#mobile-quick-menu { 
+display: none; /* 기본적으로 보이지 않게 설정 */
+}
+.m-main-btn { 
+    width: 40px; height: 40px; border-radius: 50%; 
+    background: #00bcd4; border: none; font-size: 20px; 
+    color: #1a1a1b; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+.menu-items { 
+    position: absolute; bottom: 70px; right: 0; display: flex; 
+    flex-direction: column; gap: 8px; visibility: hidden; opacity: 0; 
+    transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+.menu-items.open { visibility: visible; opacity: 1; transform: translateY(0); }
+.m-util-btn { 
+    background: rgba(44, 44, 46, 0.95); padding: 12px 20px; 
+    border-radius: 30px; color: #fff; font-size: 14px; white-space: nowrap;
+    border: 1px solid #3a3a3c; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* 로딩 애니메이션 */
+#loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; color: #00bcd4; }
+.spinner { width: 30px; height: 30px; border: 3px solid rgba(0,188,212, 0.2); border-top: 3px solid #00bcd4; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 10px; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; }
+.modal-overlay.open { display: flex; }
+.modal-content { background:#2c2c2e; padding:30px; border-radius:12px; max-width:90%; color:#fff; }
+/* flipbook.skin.css 하단에 추가 */
+#btnDisplayMode {
+    min-width: 90px;
+    background: #3a3a3c;
+    color: #00bcd4;
+    border: 1px solid #48484a;
+    transition: all 0.2s;
+}
+
+#btnDisplayMode.active {
+    background: #00bcd4;
+    color: #1a1a1b;
+}
+
+/* 2. 푸터 내부 버튼 그룹 최적화 */
+.footer-utils {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* --- 모바일 최적화 섹션 (최종본) --- */
+@media (max-width: 1023px) {
+    /* 1. 푸터 레이아웃 최적화 */
+    #ui-footer {
+        flex-direction: row !important;
+        justify-content: space-between;
+        padding: 0 10px env(safe-area-inset-bottom) 10px !important;
+        height: 50px !important; /* 모바일 푸터 높이 고정 */
+    }
+
+    /* 2. 불필요한 요소 숨기기 */
+    #btnDisplayMode, 
+    .mobile-hide,
+    #ui-footer .divider, 
+    #page-label-spread { 
+        display: none !important; 
+    }
+
+    /* 3. 슬라이더 공간 확보 */
+    .slider-container {
+        flex: 1;
+        margin: 0 10px !important;
+        width: auto !important;
+    }
+
+    /* 4. 버튼 컨트롤 정렬 */
+    .main-controls {
+        width: auto !important;
+        display: flex;
+        gap: 6px !important;
+        align-items: center;
+    }
+
+    #ui-footer button {
+        height: 34px !important;
+        padding: 0 10px !important;
+        font-size: 13px !important;
+    }
+
+    /* 5. 목차 버튼 아이콘화 */
+    #thumb-toggle {
+        min-width: 44px !important;
+	height: 34px !important;
+        padding: 0 !important;
+        font-size: 0 !important;      /* [핵심] 실제 텍스트 크기를 0으로 만들어 숨김 */
+        line-height: 0 !important;    /* 라인 높이 제거 */
+        text-indent: -9999px !important; /* [추가] 텍스트를 화면 밖으로 밀어냄 */
+        overflow: hidden !important;   /* 넘치는 텍스트 차단 */
+        position: relative;    }
+
+    #thumb-toggle::before {
+        content: '▤';
+	font-size: 20px;
+        color: #fff;
+        line-height: 1;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-indent: 0;
+    }
+
+    /* 6. 이전/다음 버튼 텍스트 숨김 */
+    .primary-btn span { 
+        display: none !important; 
+    }
+
+    /* 7. 목차 패널 (가장 중요) */
+    #thumb-panel {
+        height: 150px !important; /* 모바일 전용 높이 */
+        bottom: -200px !important; /* 평소 숨김 위치 */
+        z-index: 5000;
+    }
+
+    #thumb-panel.open { 
+        /* 푸터 높이(50px) 만큼 띄워서 표시 */
+        bottom: calc(50px + env(safe-area-inset-bottom)) !important; 
+        border-radius: 15px 15px 0 0;
+        box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+    }
+}
+
+/* flipbook.skin.css 하단에 추가 또는 수정 */
+#ui-footer, 
+#ui-footer *, 
+#thumb-toggle,
+#thumb-panel,
+#help-modal,
+.modal-content {
+    /* 더블클릭 확대 제스처를 브라우저 수준에서 비활성화 */
+    touch-action: manipulation !important;
+    
+    /* 텍스트 선택 등으로 인한 의도치 않은 확대 방지 */
+    -webkit-user-select: none;
+    user-select: none;
+
+    /* 모바일 탭 하이라이트 제거 */
+    -webkit-tap-highlight-color: transparent;
+}
